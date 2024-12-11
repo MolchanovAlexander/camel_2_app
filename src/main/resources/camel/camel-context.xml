@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://camel.apache.org/schema/spring https://camel.apache.org/schema/spring/camel-spring.xsd">
+
+
+    <camelContext id="app2Context" xmlns="http://camel.apache.org/schema/spring" trace="false">
+
+        <errorHandler id="parseErr" type="DeadLetterChannel" deadLetterUri="activemq:queue:DNO.ERROR"/>
+        <errorHandler id="timingErr" deadLetterUri="activemq:queue:DNO.ERROR" type="DeadLetterChannel">
+            <redeliveryPolicy backOffMultiplier="2" maximumRedeliveries="2" redeliveryDelay="1000" retryAttemptedLogLevel="WARN" useExponentialBackOff="true"/>
+        </errorHandler>
+
+
+        <route id="dno">
+            <from uri="activemq:queue:APP2.IN"/>
+            <log message="camel_2_app: ${body}"/>
+            <to uri="activemq:queue:DNO.FR"/>
+        </route>
+
+    </camelContext>
+
+</beans>
